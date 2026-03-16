@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlumniConnect</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161921;
+    --card: #1e2230;
+    --border: #2a2f42;
+    --accent: #4f8ef7;
+    --accent2: #a78bfa;
+    --gold: #f0c060;
+    --green: #34d399;
+    --text: #e8eaf2;
+    --muted: #7a80a0;
+    --danger: #f87171;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; }
+  h1,h2,h3,h4 { font-family: 'Fraunces', serif; font-weight: 600; }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: var(--bg); position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: 'Fraunces', serif; font-size: 22px; color: var(--accent); letter-spacing: -0.5px; }
+  .logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 6px; }
+  .nav-links a {
+    padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500;
+    color: var(--muted); text-decoration: none; cursor: pointer; transition: all .2s;
+  }
+  .nav-links a:hover, .nav-links a.active { background: var(--card); color: var(--text); }
+  .nav-links a.active { color: var(--accent); }
+  .nav-right { display: flex; gap: 10px; }
+  .btn { padding: 9px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all .2s; font-family: 'DM Sans', sans-serif; }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #3a7ee8; transform: translateY(-1px); }
+  .btn-gold { background: var(--gold); color: #1a1200; font-weight: 600; }
+  .btn-gold:hover { background: #e8b040; transform: translateY(-1px); }
+  .btn-green { background: var(--green); color: #052e16; font-weight: 600; }
+  .btn-sm { padding: 6px 14px; font-size: 13px; }
+  .btn-danger { background: var(--danger); color: #fff; }
+
+  /* PAGES */
+  .page { display: none; padding: 48px; min-height: calc(100vh - 65px); animation: fadeIn .3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* HERO */
+  .hero { text-align: center; padding: 80px 0 60px; max-width: 700px; margin: 0 auto; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(79,142,247,.12); border: 1px solid rgba(79,142,247,.3); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 13px; margin-bottom: 24px; }
+  .hero h1 { font-size: 56px; line-height: 1.1; color: var(--text); margin-bottom: 20px; }
+  .hero h1 em { color: var(--gold); font-style: normal; }
+  .hero p { color: var(--muted); font-size: 17px; margin-bottom: 36px; }
+  .hero-cta { display: flex; gap: 12px; justify-content: center; }
+  .stats-row { display: flex; gap: 48px; justify-content: center; margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border); }
+  .stat-item { text-align: center; }
+  .stat-num { font-family: 'Fraunces', serif; font-size: 32px; color: var(--accent); }
+  .stat-label { color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+  .card-sm { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .section-title { font-size: 28px; margin-bottom: 6px; }
+  .section-sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+
+  /* FORM */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1/-1; }
+  label { font-size: 13px; color: var(--muted); font-weight: 500; }
+  input, select, textarea {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px;
+    outline: none; transition: border .2s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  select option { background: var(--surface); }
+  textarea { resize: vertical; min-height: 90px; }
+
+  /* BADGE */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+  .badge-blue { background: rgba(79,142,247,.15); color: var(--accent); }
+  .badge-purple { background: rgba(167,139,250,.15); color: var(--accent2); }
+  .badge-gold { background: rgba(240,192,96,.15); color: var(--gold); }
+  .badge-green { background: rgba(52,211,153,.15); color: var(--green); }
+
+  /* ALUMNI GRID */
+  .alumni-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+  .alumni-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px; transition: all .2s; }
+  .alumni-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .alumni-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 18px; color: #fff; margin-bottom: 14px; }
+  .alumni-name { font-size: 16px; font-weight: 500; margin-bottom: 2px; }
+  .alumni-role { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .alumni-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .alumni-actions { display: flex; gap: 8px; }
+
+  /* SEARCH BAR */
+  .search-bar { display: flex; gap: 12px; margin-bottom: 28px; }
+  .search-bar input { flex: 1; }
+  .filter-row { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+  .filter-chip { padding: 6px 14px; border-radius: 20px; font-size: 13px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .2s; font-family: 'DM Sans', sans-serif; }
+  .filter-chip:hover, .filter-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* CHAT */
+  .chat-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; height: 600px; }
+  .chat-list { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+  .chat-list-header { padding: 16px 18px; border-bottom: 1px solid var(--border); font-weight: 500; font-size: 15px; }
+  .chat-item { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; transition: background .15s; border-left: 3px solid transparent; }
+  .chat-item:hover { background: var(--surface); }
+  .chat-item.active { background: rgba(79,142,247,.08); border-left-color: var(--accent); }
+  .chat-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--accent2), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 14px; color: #fff; font-weight: 600; flex-shrink: 0; }
+  .chat-avatar.green { background: linear-gradient(135deg, var(--green), var(--accent)); }
+  .chat-name { font-size: 14px; font-weight: 500; }
+  .chat-preview { font-size: 12px; color: var(--muted); }
+  .chat-window { background: var(--card); border: 1px solid var(--border); border-radius: 14px; display: flex; flex-direction: column; }
+  .chat-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+  .chat-header-info { flex: 1; }
+  .chat-header-name { font-weight: 500; font-size: 15px; }
+  .chat-header-sub { font-size: 12px; color: var(--green); }
+  .chat-privacy-badge { font-size: 12px; background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.25); color: var(--green); padding: 4px 10px; border-radius: 6px; }
+  .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+  .msg { max-width: 70%; }
+  .msg.sent { align-self: flex-end; }
+  .msg.recv { align-self: flex-start; }
+  .msg-bubble { padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
+  .msg.sent .msg-bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.recv .msg-bubble { background: var(--surface); color: var(--text); border-bottom-left-radius: 4px; }
+  .msg-time { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .msg.sent .msg-time { text-align: right; }
+  .chat-input-bar { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; }
+  .chat-input-bar input { flex: 1; border-radius: 20px; padding: 10px 16px; }
+  .send-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; transition: all .2s; }
+  .send-btn:hover { background: #3a7ee8; transform: scale(1.05); }
+
+  /* MANAGEMENT */
+  .mgmt-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+  .mgmt-stat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .mgmt-stat-num { font-family: 'Fraunces', serif; font-size: 30px; color: var(--accent); }
+  .mgmt-stat-label { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 28px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 14px 18px; font-size: 12px; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border); background: var(--surface); text-transform: uppercase; letter-spacing: .5px; }
+  td { padding: 14px 18px; font-size: 14px; border-bottom: 1px solid rgba(42,47,66,.6); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+  .event-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 20px; }
+  .event-date { background: var(--accent); color: #fff; border-radius: 10px; padding: 10px 16px; text-align: center; flex-shrink: 0; }
+  .event-day { font-family: 'Fraunces', serif; font-size: 26px; line-height: 1; }
+  .event-month { font-size: 12px; opacity: .85; }
+  .event-info { flex: 1; }
+  .event-title { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+  .event-meta { font-size: 13px; color: var(--muted); }
+  .progress-bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; background: var(--green); }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 28px; background: var(--surface); border-radius: 10px; padding: 4px; width: fit-content; }
+  .tab { padding: 8px 20px; border-radius: 7px; font-size: 14px; cursor: pointer; transition: all .2s; color: var(--muted); font-family: 'DM Sans', sans-serif; border: none; background: transparent; }
+  .tab.active { background: var(--card); color: var(--text); font-weight: 500; }
+
+  /* REGISTER SUCCESS */
+  .success-banner { background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.3); border-radius: 12px; padding: 18px 24px; display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+  .success-icon { font-size: 22px; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+
+  /* request card */
+  .request-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; display: flex; align-items: center; gap: 16px; }
+  .request-info { flex: 1; }
+  .request-name { font-weight: 500; font-size: 15px; }
+  .request-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .request-actions { display: flex; gap: 8px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Alumni<span>Connect</span></div>
+  <div class="nav-links">
+    <a class="active" onclick="showPage('home')">Home</a>
+    <a onclick="showPage('register')">Alumni Register</a>
+    <a onclick="showPage('students')">Find Alumni</a>
+    <a onclick="showPage('chat')">Messages</a>
+    <a onclick="showPage('management')">Management</a>
+  </div>
+  <div class="nav-right">
+    <button class="btn btn-outline">Log in</button>
+    <button class="btn btn-primary">Sign up</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-badge">✦ Your institution's alumni network</div>
+    <h1>Connect. Mentor.<br><em>Grow together.</em></h1>
+    <p>AlumniConnect bridges graduating students with alumni — for mentorship, career guidance, and lifelong institutional bonds.</p>
+    <div class="hero-cta">
+      <button class="btn btn-gold" onclick="showPage('register')">Register as Alumni</button>
+      <button class="btn btn-outline" onclick="showPage('students')">Find a Mentor</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-num">2,400+</div>
+        <div class="stat-label">Alumni registered</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">18</div>
+        <div class="stat-label">Departments covered</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">340</div>
+        <div class="stat-label">Mentorships active</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">92%</div>
+        <div class="stat-label">Satisfaction rate</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ALUMNI REGISTER -->
+<div class="page" id="page-register">
+  <h2 class="section-title">Alumni Registration</h2>
+  <p class="section-sub">Complete your profile — students will connect with you for guidance and mentorship.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="card">
+        <h3 style="font-size:18px; margin-bottom:20px;">Personal & Academic Info</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>First name</label>
+            <input type="text" placeholder="e.g. Priya">
+          </div>
+          <div class="form-group">
+            <label>Last name</label>
+            <input type="text" placeholder="e.g. Sharma">
+          </div>
+          <div class="form-group">
+            <label>Graduation year</label>
+            <select>
+              <option>2024</option>
+              <option>2023</option>
+              <option>2022</option>
+              <option>2021</option>
+              <option>2020</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Department</label>
+            <select>
+              <option>Computer Science & Engineering</option>
+              <option>Electronics & Communication</option>
+              <option>Mechanical Engineering</option>
+              <option>Civil Engineering</option>
+              <option>Information Technology</option>
+              <option>Electrical Engineering</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Email address</label>
+            <input type="email" placeholder="your@email.com">
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <h3 style="font-size:18px; margin-bottom:20px;">Professional Details</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Current job role</label>
+            <input type="text" placeholder="e.g. Software Engineer">
+          </div>
+          <div class="form-group">
+            <label>Company</label>
+            <input type="text" placeholder="e.g. Google, Infosys">
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" placeholder="e.g. Bengaluru">
+          </div>
+          <div class="form-group">
+            <label>Country</label>
+            <select>
+              <option>India</option>
+              <option>United States</option>
+              <option>United Kingdom</option>
+              <option>Canada</option>
+              <option>Germany</option>
+              <option>Singapore</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Areas you can mentor in</label>
+            <input type="text" placeholder="e.g. placements, higher studies, web dev, career switch">
+          </div>
+          <div class="form-group full">
+            <label>Short bio (optional)</label>
+            <textarea placeholder="Tell students a bit about your journey..."></textarea>
+          </div>
+        </div>
+        <div style="margin-top:24px;">
+          <button class="btn btn-gold" style="width:100%; padding:12px;" onclick="showRegisterSuccess()">Complete Registration</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:18px;">
+      <div id="success-msg" style="display:none;">
+        <div class="success-banner">
+          <span class="success-icon">✓</span>
+          <div>
+            <div style="font-weight:500;">Registration successful!</div>
+            <div style="font-size:13px; color:var(--muted); margin-top:2px;">Your profile is now visible to students.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h4 style="font-size:15px; margin-bottom:14px; color:var(--muted);">Profile preview</h4>
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:16px;">
+          <div class="alumni-avatar" style="width:56px; height:56px; font-size:20px;">P</div>
+          <div>
+            <div style="font-weight:500; font-size:16px;">Priya Sharma</div>
+            <div style="font-size:13px; color:var(--muted);">Software Engineer · Google</div>
+          </div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
+          <span class="badge badge-blue">CSE 2024</span>
+          <span class="badge badge-green">Bengaluru</span>
+          <span class="badge badge-purple">Open to mentor</span>
+        </div>
+        <div style="font-size:13px; color:var(--muted);">Passionate about building scalable systems. Happy to guide students on placements and career growth.</div>
+      </div>
+      <div class="card">
+        <h4 style="font-size:14px; color:var(--muted); margin-bottom:12px;">Privacy promise</h4>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; gap:10px; align-items:flex-start;">
+            <span style="color:var(--green); font-size:16px; margin-top:1px;">✓</span>
+            <span style="font-size:13px; color:var(--muted);">Your email and phone are never shared with students</span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start;">
+            <span style="color:var(--green); font-size:16px; margin-top:1px;">✓</span>
+            <span style="font-size:13px; color:var(--muted);">All chats go through our anonymous messaging system</span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start;">
+            <span style="color:var(--green); font-size:16px; margin-top:1px;">✓</span>
+            <span style="font-size:13px; color:var(--muted);">Only management can see your full contact details</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STUDENTS: FIND ALUMNI -->
+<div class="page" id="page-students">
+  <h2 class="section-title">Find Alumni &amp; Request Mentorship</h2>
+  <p class="section-sub">Search by department, company, or role. Send a mentorship request — no personal info is shared.</p>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Search by name, company, role, or skill...">
+    <button class="btn btn-primary">Search</button>
+  </div>
+
+  <div class="filter-row">
+    <button class="filter-chip active">All</button>
+    <button class="filter-chip">CSE</button>
+    <button class="filter-chip">ECE</button>
+    <button class="filter-chip">Mechanical</button>
+    <button class="filter-chip">IT</button>
+    <button class="filter-chip">Civil</button>
+    <button class="filter-chip">Batch 2022</button>
+    <button class="filter-chip">Batch 2023</button>
+    <button class="filter-chip">Batch 2024</button>
+    <button class="filter-chip">Open to mentor</button>
+  </div>
+
+  <div class="alumni-grid">
+
+    <div class="alumni-card">
+      <div class="alumni-avatar">A</div>
+      <div class="alumni-name">Arjun Mehta</div>
+      <div class="alumni-role">Product Manager · Microsoft</div>
+      <div class="alumni-tags">
+        <span class="badge badge-blue">CSE 2022</span>
+        <span class="badge badge-green">Hyderabad</span>
+      </div>
+      <div class="alumni-actions">
+        <button class="btn btn-primary btn-sm" onclick="showPage('chat')">Message</button>
+        <button class="btn btn-outline btn-sm">Request mentor</button>
+      </div>
+    </div>
+
+    <div class="alumni-card">
+      <div class="alumni-avatar" style="background: linear-gradient(135deg, var(--gold), var(--accent));">R</div>
+      <div class="alumni-name">Rekha Nair</div>
+      <div class="alumni-role">Data Scientist · Flipkart</div>
+      <div class="alumni-tags">
+        <span class="badge badge-blue">IT 2023</span>
+        <span class="badge badge-green">Bengaluru</span>
+      </div>
+      <div class="alumni-actions">
+        <button class="btn btn-primary btn-sm" onclick="showPage('chat')">Message</button>
+        <button class="btn btn-outline btn-sm">Request mentor</button>
+      </div>
+    </div>
+
+    <div class="alumni-card">
+      <div class="alumni-avatar" style="background: linear-gradient(135deg, var(--green), var(--accent2));">K</div>
+      <div class="alumni-name">Karthik Raj</div>
+      <div class="alumni-role">Backend Engineer · Swiggy</div>
+      <div class="alumni-tags">
+        <span class="badge badge-blue">CSE 2021</span>
+        <span class="badge badge-green">Chennai</span>
+      </div>
+      <div class="alumni-actions">
+        <button class="btn btn-primary btn-sm" onclick="showPage('chat')">Message</button>
+        <button class="btn btn-outline btn-sm">Request mentor</button>
+      </div>
+    </div>
+
+    <div class="alumni-card">
+      <div class="alumni-avatar" style="background: linear-gradient(135deg, #f87171, var(--accent2));">S</div>
+      <div class="alumni-name">Sneha Iyer</div>
+      <div class="alumni-role">UX Designer · Zoho</div>
+      <div class="alumni-tags">
+        <span class="badge badge-blue">ECE 2023</span>
+        <span class="badge badge-green">Coimbatore</span>
+      </div>
+      <div class="alumni-actions">
+        <button class="btn btn-primary btn-sm" onclick="showPage('chat')">Message</button>
+        <button class="btn btn-outline btn-sm">Request mentor</button>
+      </div>
+    </div>
+
+    <div class="alumni-card">
+      <div class="alumni-avatar" style="background: linear-gradient(135deg, var(--accent2), var(--gold));">V</div>
+      <div class="alumni-name">Vivek Sundaram</div>
+      <div class="alumni-role">Civil Engineer · L&amp;T</div>
+      <div class="alumni-tags">
+        <span class="badge badge-blue">Civil 2022</span>
+        <span class="badge badge-green">Mumbai</span>
+      </div>
+      <div class="alumni-actions">
+        <button class="btn btn-primary btn-sm" onclick="showPage('chat')">Message</button>
+        <button class="btn btn-outline btn-sm">Request mentor</button>
+      </div>
+    </div>
+
+    <div class="alumni-card">
+      <div class="alumni-avatar" style="background: linear-gradient(135deg, var(--green), var(--gold));">D</div>
+      <div class="alumni-name">Deepika Rao</div>
+      <div class="alumni-role">ML Engineer · Amazon</div>
+      <div class="alumni-tags">
+        <span class="badge badge-blue">CSE 2024</span>
+        <span class="badge badge-green">Pune</span>
+      </div>
+      <div class="alumni-actions">
+        <button class="btn btn-primary btn-sm" onclick="showPage('chat')">Message</button>
+        <button class="btn btn-outline btn-sm">Request mentor</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CHAT -->
+<div class="page" id="page-chat">
+  <h2 class="section-title">Messages</h2>
+  <p class="section-sub">All conversations are anonymous — no personal contact info is shared with either party.</p>
+  <div class="chat-layout">
+    <div class="chat-list">
+      <div class="chat-list-header">Conversations</div>
+      <div class="chat-item active">
+        <div class="chat-avatar">A</div>
+        <div>
+          <div class="chat-name">Arjun Mehta</div>
+          <div class="chat-preview">Sure, let's connect Friday!</div>
+        </div>
+      </div>
+      <div class="chat-item">
+        <div class="chat-avatar green">R</div>
+        <div>
+          <div class="chat-name">Rekha Nair</div>
+          <div class="chat-preview">Have you tried Kaggle yet?</div>
+        </div>
+      </div>
+      <div class="chat-item">
+        <div class="chat-avatar" style="background: linear-gradient(135deg, var(--green), var(--gold));">K</div>
+        <div>
+          <div class="chat-name">Karthik Raj</div>
+          <div class="chat-preview">Focus on DSA first, then...</div>
+        </div>
+      </div>
+      <div style="padding:16px 18px; border-top:1px solid var(--border); margin-top:auto;">
+        <div style="font-size:12px; color:var(--muted); line-height:1.5;">Your identity is protected. Alumni only see your department and year.</div>
+      </div>
+    </div>
+
+    <div class="chat-window">
+      <div class="chat-header">
+        <div class="chat-avatar">A</div>
+        <div class="chat-header-info">
+          <div class="chat-header-name">Arjun Mehta · PM at Microsoft</div>
+          <div class="chat-header-sub">● Online now</div>
+        </div>
+        <div class="chat-privacy-badge">Anonymous chat</div>
+      </div>
+      <div class="chat-messages">
+        <div class="msg recv">
+          <div class="msg-bubble">Hi! I saw your mentorship request. Happy to help with product management career paths.</div>
+          <div class="msg-time">10:32 AM</div>
+        </div>
+        <div class="msg sent">
+          <div class="msg-bubble">Thank you so much! I'm a 3rd year CSE student and really interested in PM roles after graduation.</div>
+          <div class="msg-time">10:34 AM</div>
+        </div>
+        <div class="msg recv">
+          <div class="msg-bubble">Great! Start with understanding user research and product thinking. Do you have any project experience?</div>
+          <div class="msg-time">10:35 AM</div>
+        </div>
+        <div class="msg sent">
+          <div class="msg-bubble">I built a campus event app last semester. Does that count?</div>
+          <div class="msg-time">10:37 AM</div>
+        </div>
+        <div class="msg recv">
+          <div class="msg-bubble">Absolutely! That's a great start. Sure, let's connect Friday — I can do a mock interview session with you!</div>
+          <div class="msg-time">10:38 AM</div>
+        </div>
+      </div>
+      <div class="chat-input-bar">
+        <input type="text" placeholder="Type a message...">
+        <button class="send-btn">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGEMENT -->
+<div class="page" id="page-management">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px;">
+    <div>
+      <h2 class="section-title">Management Dashboard</h2>
+      <p style="color:var(--muted); font-size:14px; margin-top:4px;">Full alumni database access, event management, and participation tracking.</p>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-outline">Export CSV</button>
+      <button class="btn btn-gold">+ Add Event</button>
+    </div>
+  </div>
+
+  <div class="mgmt-grid">
+    <div class="mgmt-stat">
+      <div class="mgmt-stat-num">2,418</div>
+      <div class="mgmt-stat-label">Total alumni</div>
+    </div>
+    <div class="mgmt-stat">
+      <div class="mgmt-stat-num" style="color:var(--green);">340</div>
+      <div class="mgmt-stat-label">Active mentorships</div>
+    </div>
+    <div class="mgmt-stat">
+      <div class="mgmt-stat-num" style="color:var(--gold);">87%</div>
+      <div class="mgmt-stat-label">Profile completion</div>
+    </div>
+    <div class="mgmt-stat">
+      <div class="mgmt-stat-num" style="color:var(--accent2);">5</div>
+      <div class="mgmt-stat-label">Upcoming events</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="mgmtTab('alumni', this)">Alumni Database</button>
+    <button class="tab" onclick="mgmtTab('events', this)">Events</button>
+    <button class="tab" onclick="mgmtTab('requests', this)">Mentorship Requests</button>
+  </div>
+
+  <!-- Alumni Table -->
+  <div id="tab-alumni">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Dept</th>
+            <th>Batch</th>
+            <th>Role</th>
+            <th>Company</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div style="font-weight:500;">Arjun Mehta</div><div style="font-size:12px;color:var(--muted);">arjun.m@alumni.edu</div></td>
+            <td>CSE</td><td>2022</td><td>Product Manager</td><td>Microsoft</td><td>Hyderabad</td>
+            <td><span class="badge badge-green">Active</span></td>
+            <td><button class="btn btn-outline btn-sm">View</button></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:500;">Rekha Nair</div><div style="font-size:12px;color:var(--muted);">rekha.n@alumni.edu</div></td>
+            <td>IT</td><td>2023</td><td>Data Scientist</td><td>Flipkart</td><td>Bengaluru</td>
+            <td><span class="badge badge-green">Active</span></td>
+            <td><button class="btn btn-outline btn-sm">View</button></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:500;">Karthik Raj</div><div style="font-size:12px;color:var(--muted);">karthik.r@alumni.edu</div></td>
+            <td>CSE</td><td>2021</td><td>Backend Engineer</td><td>Swiggy</td><td>Chennai</td>
+            <td><span class="badge badge-green">Active</span></td>
+            <td><button class="btn btn-outline btn-sm">View</button></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:500;">Sneha Iyer</div><div style="font-size:12px;color:var(--muted);">sneha.i@alumni.edu</div></td>
+            <td>ECE</td><td>2023</td><td>UX Designer</td><td>Zoho</td><td>Coimbatore</td>
+            <td><span class="badge badge-purple">Away</span></td>
+            <td><button class="btn btn-outline btn-sm">View</button></td>
+          </tr>
+          <tr>
+            <td><div style="font-weight:500;">Deepika Rao</div><div style="font-size:12px;color:var(--muted);">deepika.r@alumni.edu</div></td>
+            <td>CSE</td><td>2024</td><td>ML Engineer</td><td>Amazon</td><td>Pune</td>
+            <td><span class="badge badge-green">Active</span></td>
+            <td><button class="btn btn-outline btn-sm">View</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Events -->
+  <div id="tab-events" style="display:none;">
+    <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:28px;">
+      <div class="event-card">
+        <div class="event-date">
+          <div class="event-day">22</div>
+          <div class="event-month">MAR 2026</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Annual Alumni Meet 2026</div>
+          <div class="event-meta">College Auditorium · All batches · 500 seats</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div>
+          <div style="font-size:12px; color:var(--muted); margin-top:4px;">360 / 500 RSVPs confirmed</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+          <span class="badge badge-green">Upcoming</span>
+          <button class="btn btn-outline btn-sm">Manage</button>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-date" style="background:var(--accent2);">
+          <div class="event-day">05</div>
+          <div class="event-month">APR 2026</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">CSE Alumni Webinar — Career in AI</div>
+          <div class="event-meta">Online · CSE batch 2020–2024 · Unlimited seats</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:40%; background:var(--accent2);"></div></div>
+          <div style="font-size:12px; color:var(--muted); margin-top:4px;">200 registered so far</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+          <span class="badge badge-purple">Registration open</span>
+          <button class="btn btn-outline btn-sm">Manage</button>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-date" style="background:var(--gold); color:#1a1200;">
+          <div class="event-day">18</div>
+          <div class="event-month">APR 2026</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Placement Guidance Session</div>
+          <div class="event-meta">Seminar Hall B · Final year students · 120 seats</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:90%; background:var(--gold);"></div></div>
+          <div style="font-size:12px; color:var(--muted); margin-top:4px;">108 / 120 seats filled</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+          <span class="badge badge-gold">Almost full</span>
+          <button class="btn btn-outline btn-sm">Manage</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mentorship Requests -->
+  <div id="tab-requests" style="display:none;">
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div class="request-card">
+        <div class="chat-avatar">T</div>
+        <div class="request-info">
+          <div class="request-name">Student #1042 → Arjun Mehta</div>
+          <div class="request-sub">CSE 3rd year · Topic: Product Management career path · Sent 2 days ago</div>
+        </div>
+        <div class="request-actions">
+          <span class="badge badge-green">Accepted</span>
+        </div>
+      </div>
+      <div class="request-card">
+        <div class="chat-avatar green">M</div>
+        <div class="request-info">
+          <div class="request-name">Student #2087 → Rekha Nair</div>
+          <div class="request-sub">IT 2nd year · Topic: Data Science internships · Sent 1 day ago</div>
+        </div>
+        <div class="request-actions">
+          <span class="badge badge-gold">Pending</span>
+        </div>
+      </div>
+      <div class="request-card">
+        <div class="chat-avatar" style="background:linear-gradient(135deg, var(--accent2), var(--gold));">S</div>
+        <div class="request-info">
+          <div class="request-name">Student #3310 → Sneha Iyer</div>
+          <div class="request-sub">ECE 4th year · Topic: Switching to UX Design · Sent 3 days ago</div>
+        </div>
+        <div class="request-actions">
+          <span class="badge badge-green">Accepted</span>
+        </div>
+      </div>
+      <div class="request-card">
+        <div class="chat-avatar" style="background:linear-gradient(135deg,var(--green),var(--accent));">R</div>
+        <div class="request-info">
+          <div class="request-name">Student #1198 → Karthik Raj</div>
+          <div class="request-sub">CSE 3rd year · Topic: Backend development roadmap · Sent 5 hours ago</div>
+        </div>
+        <div class="request-actions">
+          <span class="badge badge-blue">New</span>
+          <button class="btn btn-outline btn-sm">Review</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const links = document.querySelectorAll('.nav-links a');
+  const map = { home:0, register:1, students:2, chat:3, management:4 };
+  if (map[id] !== undefined) links[map[id]].classList.add('active');
+}
+
+function showRegisterSuccess() {
+  document.getElementById('success-msg').style.display = 'block';
+  document.getElementById('success-msg').scrollIntoView({ behavior: 'smooth' });
+}
+
+function mgmtTab(tab, el) {
+  document.getElementById('tab-alumni').style.display = 'none';
+  document.getElementById('tab-events').style.display = 'none';
+  document.getElementById('tab-requests').style.display = 'none';
+  document.getElementById('tab-' + tab).style.display = 'block';
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
